@@ -132,18 +132,15 @@ func main() {
 	}
 
 	actionTableWriter := tablewriter.NewWriter(os.Stdout)
-	actionTableHeader := make([]string, cfg.Terminals.Len()+1)
+	var actionTableHeader []string
 	next := cfg.Terminals.Iterator()
-	actionTableHeader[0] = "State"
-	i := 1
+	actionTableHeader = append(actionTableHeader, "State")
 	for elem, ok := next(); ok; elem, ok = next() {
 		if elem != "" {
-			actionTableHeader[i] = elem
-		} else {
-			actionTableHeader[i] = "$"
+			actionTableHeader = append(actionTableHeader, elem)
 		}
-		i++
 	}
+	actionTableHeader = append(actionTableHeader, "$")
 	actionTableWriter.Append(actionTableHeader)
 	actionTableWriter.SetRowLine(true)
 	prtActionTable := make([][]string, len(actionTable))
@@ -160,15 +157,13 @@ func main() {
 	fmt.Println()
 
 	gotoTableWriter := tablewriter.NewWriter(os.Stdout)
-	gotoTableHeader := make([]string, cfg.NonTerminals.Len())
+	gotoTableHeader := make([]string, cfg.NonTerminals.Len()+1)
 	next = cfg.NonTerminals.Iterator()
 	gotoTableHeader[0] = "State"
-	i = 1
+	i := 1
 	for elem, ok := next(); ok; elem, ok = next() {
-		if elem != cfg.StartRule.LHS() {
-			gotoTableHeader[i] = elem
-			i++
-		}
+		gotoTableHeader[i] = elem
+		i++
 	}
 	gotoTableWriter.Append(gotoTableHeader)
 	gotoTableWriter.SetRowLine(true)
