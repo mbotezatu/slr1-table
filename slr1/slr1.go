@@ -2,6 +2,7 @@ package slr1
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/mbotezatu/slr1-table/containers"
 	"github.com/mbotezatu/slr1-table/grammar"
@@ -80,7 +81,7 @@ func CanonicalCollection(cfg *grammar.CFG) (cc [][]*LR0item, gotos map[int]map[s
 		}
 	}
 
-	/* 	for i := 0; i < len(cc); i++ {
+	for i := 0; i < len(cc); i++ {
 		var b strings.Builder
 		b.WriteString("State: ")
 		b.WriteString(fmt.Sprintf("%d\n", i))
@@ -104,7 +105,7 @@ func CanonicalCollection(cfg *grammar.CFG) (cc [][]*LR0item, gotos map[int]map[s
 		}
 
 		fmt.Println(b.String())
-	} */
+	}
 
 	return
 }
