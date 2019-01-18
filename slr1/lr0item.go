@@ -1,6 +1,10 @@
 package slr1
 
-import "github.com/mbotezatu/slr1-table/grammar"
+import (
+	"fmt"
+
+	"github.com/mbotezatu/slr1-table/grammar"
+)
 
 // LR0item defines the structure of a LR(0) item
 type LR0item struct {
@@ -36,4 +40,8 @@ func (l *LR0item) Equals(i *LR0item) (yes bool) {
 		yes = true
 	}
 	return
+}
+
+func (l *LR0item) String() string {
+	return fmt.Sprintf("Position: %d\nRule: %s", l.pPos, l.rule.String())
 }

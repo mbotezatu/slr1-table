@@ -79,6 +79,33 @@ func CanonicalCollection(cfg *grammar.CFG) (cc [][]*LR0item, gotos map[int]map[s
 			}
 		}
 	}
+
+	/* 	for i := 0; i < len(cc); i++ {
+		var b strings.Builder
+		b.WriteString("State: ")
+		b.WriteString(fmt.Sprintf("%d\n", i))
+		for _, v := range cc[i] {
+			b.WriteString(v.rule.LHS())
+			b.WriteString(" -> ")
+			pointPlaced := false
+			for i, k := range v.rule.RHS() {
+				if i == v.pPos {
+					b.WriteString(".")
+					pointPlaced = true
+				}
+				b.WriteString(k)
+				b.WriteString(" ")
+			}
+
+			if !pointPlaced {
+				b.WriteString(".")
+			}
+			b.WriteString("\n")
+		}
+
+		fmt.Println(b.String())
+	} */
+
 	return
 }
 
@@ -92,6 +119,7 @@ func GenSLR1Table(cfg *grammar.CFG, followSets map[string]*containers.Set) (acti
 			if v.Equals(NewLR0item(len(cfg.StartRule.RHS()), cfg.StartRule)) {
 				if actionTable[i]["$"] != "" {
 					err = fmt.Errorf("The grammar is not SLR(1)")
+					fmt.Println(actionTable[i]["$"])
 					return
 				}
 				actionTable[i]["$"] = "ACCEPT"
@@ -100,16 +128,24 @@ func GenSLR1Table(cfg *grammar.CFG, followSets map[string]*containers.Set) (acti
 				for elem, ok := next(); ok; elem, ok = next() {
 					if actionTable[i][elem] != "" {
 						err = fmt.Errorf("The grammar is not SLR(1)")
+						fmt.Println(actionTable[i][elem])
 						return
 					}
 					actionTable[i][elem] = "REDUCE " + v.rule.String()
 				}
-			} else if cfg.Terminals.Contains(v.rule.RHS()[v.pPos]) && v.rule.RHS()[v.pPos] != "" {
+			} else if cfg.Terminals.Contains(v.rule.RHS()[v.pPos]) /* && v.rule.RHS()[v.pPos] != "" */ {
+				aux := fmt.Sprintf("SHIFT %d", gotos[i][v.rule.RHS()[v.pPos]])
 				if actionTable[i][v.rule.RHS()[v.pPos]] != "" {
-					err = fmt.Errorf("The grammar is not SLR(1)")
-					return
+					if actionTable[i][v.rule.RHS()[v.pPos]] != aux {
+						err = fmt.Errorf("The grammar is not SLR(1)")
+						// fmt.Printf("State: %d, Terminal: %s, There Is: %s", i, v.rule.RHS()[v.pPos], actionTable[i][v.rule.RHS()[v.pPos]])
+						// fmt.Println(actionTable[i][v.rule.RHS()[v.pPos]])
+						return
+					}
+				} else {
+					actionTable[i][v.rule.RHS()[v.pPos]] = aux
 				}
-				actionTable[i][v.rule.RHS()[v.pPos]] = fmt.Sprintf("SHIFT %d", gotos[i][v.rule.RHS()[v.pPos]])
+
 			}
 		}
 	}
